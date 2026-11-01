@@ -61,6 +61,11 @@ h2{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.
 .row.done .name{color:var(--muted);text-decoration:line-through}
 .mus{flex:none;padding:9px 12px;border-radius:99px;border:1px solid var(--line);color:var(--fg);text-decoration:none;font-weight:700;font-size:.85rem}
 @media (max-width:480px){.row{flex-wrap:wrap}.row .name{flex-basis:calc(100% - 42px)}}
+.shots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.shot{display:block;aspect-ratio:1.8;max-width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--line);
+  background-color:var(--surface);background-repeat:no-repeat;background-size:106% 438%}
+.shot:focus-visible{outline:3px solid var(--c2);outline-offset:2px}
+@media (max-width:760px){.shots{grid-template-columns:repeat(2,1fr)}}
 .play{flex:none;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:99px;
   background:var(--pitch-soft);color:var(--pitch);font-weight:700;text-decoration:none;font-size:.9rem}
 .play::before{content:"";width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
@@ -104,6 +109,8 @@ footer{color:var(--muted);font-size:.85rem}
   <nav class="levels" id="levels" role="tablist" aria-label="Level"></nav>
 
   <div class="title"><h3 id="lvTitle"></h3><div class="bar" aria-hidden="true"><i id="lvBar"></i></div><span class="total" id="lvCount"></span></div>
+
+  <div class="shots" id="shots"></div>
 
   <div class="panel">
     <section>
@@ -182,6 +189,7 @@ function renderLevel(){
     <input class="chk" type="checkbox" id="c-${id}" data-id="${id}" ${done[id]?"checked":""} aria-label="${esc(n)} geschafft">
     <label class="name" for="c-${id}">${esc(n)}${s?`<em>${s}</em>`:""}</label>
     ${mu?`<a class="mus" href="${url(MID[mu])}" data-play="${MID[mu]}" target="_blank" rel="noopener" aria-label="Musik ${mu}">♪ ${mu}</a>`:""}<a class="play" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener">Ansehen</a></div>`).join("");
+  $("shots").innerHTML=[4.9,35.5,66.3,97.9].map((p,k)=>`<a class="shot" href="${url(lv.img)}" data-play="${lv.img}" aria-label="Übersicht Level ${cur+1}, Bild ${k+1}" style="background-image:url('https://drive.google.com/thumbnail?id=${lv.img}&sz=w1200');background-position:50% ${p}%"></a>`).join("");
   $("extra").innerHTML=`<a class="chip" href="${url(lv.img)}" data-play="${lv.img}" target="_blank" rel="noopener">Übersichtsbild Level ${cur+1}</a>`;
   $("colors").innerHTML=lv.c.length
     ? `<div class="tiles">${lv.c.map(([n,id],k)=>`<a class="tile" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener" data-id="${ck(cur,id)}"><b>${esc(n)}</b><span>${done[ck(cur,id)]?"✓ geschafft":"Mitmachen · Video "+(k+1)}</span></a>`).join("")}</div>`
