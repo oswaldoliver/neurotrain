@@ -116,18 +116,12 @@ footer{color:var(--muted);font-size:.85rem}
     <section>
       <h2>Moves lernen</h2>
       <div class="list" id="moves"></div>
-      <div class="extra" id="extra"></div>
     </section>
     <section>
       <h2>Farbenvideos</h2>
       <div id="colors"></div>
     </section>
   </div>
-
-  <section class="music">
-    <h2>Musik</h2>
-    <div class="extra" id="music"></div>
-  </section>
 
   <footer>
     Haken werden nur auf diesem Gerät gespeichert.
@@ -199,7 +193,6 @@ function renderLevel(){
     <label class="name" for="c-${id}">${esc(n)}${s?`<em>${s}</em>`:""}</label>
     ${mu?`<a class="mus" href="${url(MID[mu])}" data-play="${MID[mu]}" target="_blank" rel="noopener" aria-label="Musik ${mu}">♪ ${mu}</a>`:""}<a class="play" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener">Ansehen</a></div>`).join("");
   $("shots").innerHTML=[4.9,35.5,66.3,97.9].map((p,k)=>`<a class="shot" href="${url(T[cur][k])}" data-play="${T[cur][k]}" aria-label="${esc((lv.m.find(x=>x[2]===T[cur][k])||["Übung"])[0]+((lv.m.find(x=>x[2]===T[cur][k])||[])[1]?" ("+lv.m.find(x=>x[2]===T[cur][k])[1]+")":""))}" style="background-image:url('https://drive.google.com/thumbnail?id=${lv.img}&sz=w1200');background-position:50% ${p}%"></a>`).join("");
-  $("extra").innerHTML=`<a class="chip" href="${url(lv.img)}" data-play="${lv.img}" target="_blank" rel="noopener">Übersichtsbild Level ${cur+1}</a>`;
   $("colors").innerHTML=lv.c.length
     ? `<div class="tiles">${lv.c.map(([n,id],k)=>`<a class="tile" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener" data-id="${ck(cur,id)}"><b>${esc(n)}</b><span>${done[ck(cur,id)]?"✓ geschafft":"Mitmachen · Video "+(k+1)}</span></a>`).join("")}</div>`
     : `<div class="empty">Farbenvideos gibt es ab Level 5. Hier zuerst die Moves sicher lernen.</div>`;
@@ -211,8 +204,6 @@ $("moves").addEventListener("change",e=>{const id=e.target.dataset.id;if(!id)ret
 $("colors").addEventListener("click",e=>{const a=e.target.closest(".tile");if(!a)return;done[a.dataset.id]=1;save();setTimeout(render,300)});
 window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#level-(\d)$/);if(m){cur=+m[1]-1;render()}});
 
-$("music").innerHTML=MUSIC.map(([n,id])=>`<a class="chip" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener">${n}</a>`).join("")+
-  `<a class="chip" href="${url(PDF)}" data-play="${PDF}" target="_blank" rel="noopener">Übersicht Musik &amp; Level (PDF)</a>`;
 
 function bindReset(){$("reset").onclick=()=>{$("resetBox").innerHTML=`<span class="confirm">Wirklich alle Haken löschen? <button type="button" id="yes">Ja, löschen</button><button type="button" id="no">Abbrechen</button></span>`;
   $("yes").onclick=()=>{done={};save();restore();render()};$("no").onclick=restore}}
