@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sempt">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1f7a45">
+<title>Sempt Akademie</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}
+/* Layout: Level-Leiste oben (1–9), darunter ein Level-Panel: Moves-Checkliste links, Farbenvideos rechts; stapelt auf schmalen Screens */
+:root{
+  --bg:#f3f6f2; --surface:#ffffff; --fg:#14231a; --muted:#5b6d61; --line:#d5ded7;
+  --pitch:#1f7a45; --pitch-soft:#e1f0e6; --done:#1f7a45;
+  --c1:#e0392b; --c2:#2f6fd6; --c3:#f2b705; --c4:#22a35a;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Nunito Sans",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1712; --surface:#17221b; --fg:#e7efe9; --muted:#9db0a3; --line:#2a3a30;
+  --pitch:#4cc27c; --pitch-soft:#1c3326; --done:#4cc27c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1712; --surface:#17221b; --fg:#e7efe9; --muted:#9db0a3; --line:#2a3a30;
+  --pitch:#4cc27c; --pitch-soft:#1c3326; --done:#4cc27c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45}
+.wrap{max-width:1000px;margin:0 auto;padding-block:20px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:20px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:800;font-size:2.6rem;line-height:1;margin:0;letter-spacing:.01em;text-transform:uppercase}
+h1 span{color:var(--pitch)}
+.total{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.levels{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.lv{appearance:none;border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;
+  padding:10px 0 8px;font-family:var(--display);font-weight:800;font-size:1.7rem;line-height:1;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.lv small{font-family:var(--body);font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lv[aria-selected="true"]{border-color:var(--pitch);background:var(--pitch);color:#fff}
+.lv[aria-selected="true"] small{color:#fff}
+.lv.full::after{content:"✓";font-size:.8rem;font-family:var(--body);color:var(--done)}
+.lv[aria-selected="true"].full::after{color:#fff}
+.lv:focus-visible,.row a:focus-visible,.tile:focus-visible,.chk:focus-visible{outline:3px solid var(--c2);outline-offset:2px}
+.panel{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+section{min-width:0}
+h2{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.title{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.title h3{font-family:var(--display);font-weight:800;font-size:2rem;margin:0;text-transform:uppercase;text-wrap:balance}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;flex:1;min-width:120px}
+.bar i{display:block;height:100%;background:var(--pitch);transition:width .25s}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.chk{width:30px;height:30px;flex:none;accent-color:var(--pitch);cursor:pointer}
+.row .name{flex:1;min-width:0;font-weight:600}
+.row .name em{font-style:normal;font-weight:400;color:var(--muted);font-size:.85rem;margin-left:4px}
+.row.done .name{color:var(--muted);text-decoration:line-through}
+.play{flex:none;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:99px;
+  background:var(--pitch-soft);color:var(--pitch);font-weight:700;text-decoration:none;font-size:.9rem}
+.play::before{content:"";width:0;height:0;border-left:9px solid currentColor;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:16px;min-height:110px;padding:14px;
+  border-radius:14px;color:#fff;text-decoration:none;font-weight:700;overflow:hidden}
+.tile b{font-family:var(--display);font-size:1.35rem;line-height:1.05;text-transform:uppercase;text-wrap:balance}
+.tile span{font-size:.8rem;opacity:.9;display:flex;align-items:center;gap:6px}
+.tile:only-child{grid-column:1/-1}
+.tile:nth-child(1){background:var(--c1)} .tile:nth-child(2){background:var(--c2)}
+.tile:nth-child(3){background:#c99500;} .tile:nth-child(4){background:var(--c4)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:16px;color:var(--muted)}
+.extra{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface);color:var(--fg);text-decoration:none;font-weight:600;font-size:.9rem}
+.music .chip{min-width:96px;justify-content:center}
+.reset{appearance:none;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;font-size:.85rem;padding:4px 0}
+.confirm{display:inline-flex;gap:8px;align-items:center;font-size:.85rem}
+.confirm button{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:6px 10px;font:inherit;cursor:pointer}
+footer{color:var(--muted);font-size:.85rem}
+@media (max-width:760px){.panel{grid-template-columns:1fr}.levels{grid-template-columns:repeat(5,1fr)}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+.player{position:fixed;inset:0;z-index:50;background:rgba(6,12,8,.88);display:flex;flex-direction:column;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));gap:10px}
+.pbar{display:flex;align-items:center;gap:10px;color:#fff;flex-wrap:wrap}
+.pbar b{flex:1;min-width:0;font-family:var(--display);font-size:1.5rem;text-transform:uppercase;line-height:1.1}
+.pbar a,.pbar button{appearance:none;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.pbar button{background:#fff;color:#14231a;border-color:#fff}
+.pframe{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.pframe iframe{width:100%;height:100%;max-width:calc((100vh - 120px)*16/9);aspect-ratio:16/9;max-height:100%;border:0;border-radius:12px;background:#000}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Sempt <span>Akademie</span></h1>
+    <div class="total" id="total"></div>
+  </header>
+
+  <nav class="levels" id="levels" role="tablist" aria-label="Level"></nav>
+
+  <div class="title"><h3 id="lvTitle"></h3><div class="bar" aria-hidden="true"><i id="lvBar"></i></div><span class="total" id="lvCount"></span></div>
+
+  <div class="panel">
+    <section>
+      <h2>Moves lernen</h2>
+      <div class="list" id="moves"></div>
+      <div class="extra" id="extra"></div>
+    </section>
+    <section>
+      <h2>Farbenvideos</h2>
+      <div id="colors"></div>
+    </section>
+  </div>
+
+  <section class="music">
+    <h2>Musik</h2>
+    <div class="extra" id="music"></div>
+  </section>
+
+  <footer>
+    Haken werden nur auf diesem Gerät gespeichert.
+    <span id="resetBox"><button class="reset" id="reset" type="button">Alle Haken zurücksetzen</button></span>
+  </footer>
+</div>
+
+<div class="player" id="player" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle">
+  <div class="pbar"><b id="pTitle"></b><a id="pDrive" href="#" target="_blank" rel="noopener">In Drive öffnen</a><button type="button" id="pClose">Schließen</button></div>
+  <div class="pframe"><iframe id="pFrame" title="Video" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+</div>
+<script>
+const F5=[["Farbenvideo","1P1_GseGHWuVLcAfXY1RCHADSlxz4okRG"]];
+const L=[
+ {m:[["Basicstep","","11pvfR32XYPfBd0aOw6yiiyVZosqVOojY"],["Basicstep Jonglieren","Beginner","1hugsja2YAh27RpckZLd8lb6Dhd08YDPQ"],["Sohletechnik Balance","Beginner","1de0dAVffZiGe6_ORQzbiqP0_IZhOnmzB"],["Sohletechnik Hüfte","","1ue2qs9R6F9M2F2ark_eS7T18M7aN4OZb"],["Übersteiger","","17WFcKFvjCtMI7OhvavBepE9S99aduXZb"]],img:"1dM_dEcjUOQ3Toa4nliTYJuRfKM2DORyN",c:F5},
+ {m:[["Rivelinho","","1okEyQDjUvLhJZvFobr1-_1XEK9lkSsyq"],["Sidestep links Jonglieren","Beginner","1185qrA6FFWVl23Ld1e0wRsPD8Sj9faes"],["Sidestep rechts Jonglieren","Beginner","1qxJ1OHJdTg7GTqdc11R9fl9Cyp73w_-W"],["Backstep links","","17hav4D-tS2W4nb2NtP5EzwWUe-7IbVQD"],["Backstep rechts","","1NJKOIvVaB-w0uo9_u27Lazd8zok_8EC2"]],img:"1xRecq1zeZg11dKDRD9mR9-wUUdowOf88",c:F5},
+ {m:[["Ballpendel Hand hoch","","1HyzXz-Mw3SXJHKQgYi5z8IpLwDrnCgRr"],["Sidestep links doppelt","","1ySghFfq0YH2LI28UZYiDLBb4to6j_ink"],["Sidestep rechts Jonglieren","Profi","1B5DOcXqsqN4-sAcayURE5dMrS_B2ndYD"],["Sidestep links doppelt Jonglieren","Beginner","13JPyZsUGlVOv4J1bZKR8D_R_XrTsSwuu"]],img:"1QCxGaq0eUf8twEHA4QeBhHGFz3KwgEzY",c:F5},
+ {m:[["Brasilianer Jonglieren","Profi","1bhb9iSlkP08FDI_R1SDewotmYrzhuzf4"],["Brasilianer Jonglieren","Beginner","1eXnkhto0gSn0mwpzLxjblZTwBWq6JwTk"],["Basicstep Jonglieren Balance","Simple","1dQr6qF1G1esftrCPOdppsuiDP-bM_eoP"],["Sidestep links/rechts Jonglieren","Beginner","1c4IbKp9IDsQrwR0HcfEsdRXXLnBI5uJv"]],img:"10_naTbHgeba8r58DONcvQm6jEDQqplKU",c:F5},
+ {m:[["Backstep links Jonglieren","Beginner","1qDL7LIyLFHvLfNMpfE-IybHiPDMR2g2Q"],["Backstep links/rechts Jonglieren","Beginner","1boF42vKI1GdmheXd1FOYFAQpOtPTO033"],["Backstep rechts Jonglieren","Beginner","1xh10PQh6V2HI5uPgncgG1meXROCTqk9s"],["Basicstep Jonglieren","Profi","14Bm1v5y9mYdfwIMM9Jy2tbqKMzjkKxX0"],["Sidestep links/rechts Jonglieren","Profi","1ZtBMz77bUfQf1-V_vYu78icdraImhkRO"]],img:"1hk7g5wkbePGgq3pUN1K3NmnJHKCubEGO",
+  c:[["Farbenvideo","1P1_GseGHWuVLcAfXY1RCHADSlxz4okRG"],["Farben & Zahlen","1zo9cPNK4b5manUwg9GxS8tHk6TicpH00"],["Buchstaben, Zahlen & Farben","1ttbn5ig5IuRBvpAwBkPPdf18fup0ePEy"],["Wortfarben","18FTQyXjAev8s1rQYPyA-V3jHsPv1Gb1X"]]},
+ {m:[["Sidestep links Jonglieren","Profi","1DLdbhoyerQ9nD_99-NYjICM5OV8QD5aD"],["Backstep links/rechts Jonglieren","Profi","1nHaJ9OOUfKFQecPkfdyZUsgFmv_PSRV4"],["Backstep rechts Jonglieren","Profi","1a6CheQtzfB9wFaWwYQW_7aQDF3BleMxE"],["Sidestep rechts Jonglieren","Profi","1F_d2yk_bJttHGTwo6PwzZz28YOT2GkJh"]],img:"1J-d3dliUQKptHukGZewbd1XkpXrt6FP2",
+  c:[["Farbenvideo","197uW373wTlXC6EwBYuzbzPGD9y4qew4k"],["Farben & Zahlen","1Z1MIp1mmb_5d7Rz4leKJrI0YvCg-Evbp"],["Buchstaben, Farben & Zahlen","1kCkRa1m4Pp_IrFPBjm8wbYcOoHrHiO2j"],["Wortfarben","1veqzWzBAD7CN7JCfNRhe9jcF6s8pK8ll"]]},
+ {m:[["Basicstep Jonglieren","Champion","1vFMaqomFPfNF34RtkIro-fe8q9XH4EH3"],["Sidestep links Jonglieren","Champion","1oE1M0NIQE__St1Nv9JnBsF78hRDrofa1"],["Sidestep rechts Jonglieren","Champion","1KGbWgVdlMvhl6sKdVy1zAYbhV4OLafXr"],["Sohletechnik","Profi","1ZaaOStGjshsEUOtUZXmvkwTnujRgpEfP"]],img:"1JFiIg7QW_YITOx0Lkke9uWqpli_PW6p-",
+  c:[["Nur Farben","1l3sKEHiYhwuPDbVjFjkJVQGf5AzGiDXM"],["Zahlen & Farben","1aBM35Q6c78hS9-x8Xmh6VZt6fAM3C0vz"],["Buchstaben, Zahlen & Farben","1DKknX_qnlqGnH2V0QzheD6m38_GyBJAF"],["Wortfarben","1N6BBoLGE-Ukwn8Uzx_nYA8uKLSug8kxo"]]},
+ {m:[["Backstep links Jonglieren","Champion","1TYTdjqv5rsdN0ObblgKtjxUlDMRhjDip"],["Backstep rechts Jonglieren","Champion","14r6HeEzFBMXzZYYvPNg0hxvNJBCpcb8K"],["Ballpendel innen Jonglieren","Simple","1Lq77EnWJnQwM92yxiE04xGoB-UgLdUq2"],["Rivelinho Jonglieren","Profi","1v77vnKteF9PbgmQ3-g6lzT3GUakDdBrX"]],img:"1aF_MFxvF-Bbc3cSuo6Hf8ssj47GBO7IY",
+  c:[["Nur Farben","16CMIHrZ6uwJek0jv1Zo7K05BoXG9ejDL"],["Farben & Zahlen","18zSInnqbTHuTS_EEzmRIgPpToX5AwXzo"],["Buchstaben, Farben & Zahlen","1W55ke11GLtOxXnW6ChWTWfWAvJ0Wqlqj"],["Wortfarben","1VyS6SU6NzFphOZgMmF3Vkk0DjahAnA-H"]]},
+ {m:[["Backstep links/rechts","","1nxzEu7Mo1sZOCJVuaqbwrQpFDVEOsNA8"],["Brasilianer Jonglieren","Profi","1reAoM9aNSxItTQceNKdJYryt2IAku-Xh"],["Freestyler","","1O1ddMf4DhamKPreNNd_EkhY3CQ3MSSjg"],["Sidezieher Jonglieren","Beginner","14MOzmPEN2qcWLboQCCDh4n9BOeTLJoBe"]],img:"132CiblyFBaRWGVhAqCoA36giY11AbREV",
+  c:[["Nur Farben","1cE05si2f8-BPEHVdtFKwh5lVIaj9icUl"],["Zahl vor Farbe","10bLzqwNjvNNnEPTTRT0C-eroToz8iCm6"],["Zahl oder Buchstabe vor Farbe","1GLKsqu2DmUIwgemxixaZHPdvI1s1tIne"],["Wortfarben","1hADMbC7UHBcreSM6ks3R8g0aSDjOR5-q"]]}
+];
+const MUSIC=[["Erde","1A96j69CzwzeK17MqYQLeBL7ffI9jbK6t"],["Feuer","1DlaNJ0FsdBuJt4KHHappZgKTBgCoIJpL"],["Luft","1tgI9qWJOy8GHwkV9gnXS0M3-lcJZZSQ0"],["Metall","11O6LI4YM3kcQkttHjukyWZ_OqXEXn6YC"],["Wasser","1VtVkflKhvVB2GnN0Git93thBGw-eDVAK"]];
+const PDF="1LQ87sXolHzvVZ-6i8aNusYKtJZD8jEBg";
+const url=id=>"https://drive.google.com/file/d/"+id+"/view";
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+let done={};
+try{done=JSON.parse(localStorage.getItem("sempt-done")||"{}")||{}}catch(e){done={}}
+const save=()=>{try{localStorage.setItem("sempt-done",JSON.stringify(done))}catch(e){}};
+
+let cur=0;
+const m=location.hash.match(/^#level-(\d)$/); if(m&&+m[1]>=1&&+m[1]<=9) cur=+m[1]-1;
+
+const ck=(i,id)=>i+":"+id;
+function count(i){const ids=L[i].m.map(x=>x[2]).concat(L[i].c.map(x=>ck(i,x[1])));return [ids.filter(id=>done[id]).length,ids.length]}
+
+function renderLevels(){
+  $("levels").innerHTML=L.map((_,i)=>{const [d,t]=count(i);
+    return `<button class="lv${d===t?" full":""}" role="tab" id="tab${i}" aria-selected="${i===cur}" data-i="${i}"><small>Level</small>${i+1}</button>`}).join("");
+  let D=0,T=0;L.forEach((_,i)=>{const [d,t]=count(i);D+=d;T+=t});
+  $("total").textContent=`${D} von ${T} Videos geschafft`;
+}
+function renderLevel(){
+  const lv=L[cur],[d,t]=count(cur);
+  $("lvTitle").textContent="Level "+(cur+1);
+  $("lvBar").style.width=(t?d/t*100:0)+"%";
+  $("lvCount").textContent=`${d}/${t}`;
+  $("moves").innerHTML=lv.m.map(([n,s,id])=>`<div class="row${done[id]?" done":""}">
+    <input class="chk" type="checkbox" id="c-${id}" data-id="${id}" ${done[id]?"checked":""} aria-label="${esc(n)} geschafft">
+    <label class="name" for="c-${id}">${esc(n)}${s?`<em>${s}</em>`:""}</label>
+    <a class="play" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener">Ansehen</a></div>`).join("");
+  $("extra").innerHTML=`<a class="chip" href="${url(lv.img)}" data-play="${lv.img}" target="_blank" rel="noopener">Übersichtsbild Level ${cur+1}</a>`;
+  $("colors").innerHTML=lv.c.length
+    ? `<div class="tiles">${lv.c.map(([n,id],k)=>`<a class="tile" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener" data-id="${ck(cur,id)}"><b>${esc(n)}</b><span>${done[ck(cur,id)]?"✓ geschafft":"Mitmachen · Video "+(k+1)}</span></a>`).join("")}</div>`
+    : `<div class="empty">Farbenvideos gibt es ab Level 5. Hier zuerst die Moves sicher lernen.</div>`;
+}
+function render(){renderLevels();renderLevel()}
+
+$("levels").addEventListener("click",e=>{const b=e.target.closest(".lv");if(!b)return;cur=+b.dataset.i;try{history.replaceState(null,"","#level-"+(cur+1))}catch(_){location.hash="level-"+(cur+1)}render()});
+$("moves").addEventListener("change",e=>{const id=e.target.dataset.id;if(!id)return;if(e.target.checked)done[id]=1;else delete done[id];save();render()});
+$("colors").addEventListener("click",e=>{const a=e.target.closest(".tile");if(!a)return;done[a.dataset.id]=1;save();setTimeout(render,300)});
+window.addEventListener("hashchange",()=>{const m=location.hash.match(/^#level-(\d)$/);if(m){cur=+m[1]-1;render()}});
+
+$("music").innerHTML=MUSIC.map(([n,id])=>`<a class="chip" href="${url(id)}" data-play="${id}" target="_blank" rel="noopener">${n}</a>`).join("")+
+  `<a class="chip" href="${url(PDF)}" data-play="${PDF}" target="_blank" rel="noopener">Übersicht Musik &amp; Level (PDF)</a>`;
+
+function bindReset(){$("reset").onclick=()=>{$("resetBox").innerHTML=`<span class="confirm">Wirklich alle Haken löschen? <button type="button" id="yes">Ja, löschen</button><button type="button" id="no">Abbrechen</button></span>`;
+  $("yes").onclick=()=>{done={};save();restore();render()};$("no").onclick=restore}}
+function restore(){$("resetBox").innerHTML=`<button class="reset" id="reset" type="button">Alle Haken zurücksetzen</button>`;bindReset()}
+bindReset();
+render();
+function openPlayer(id,title){$("pTitle").textContent=title;$("pDrive").href=url(id);
+  $("pFrame").src="https://drive.google.com/file/d/"+id+"/preview";$("player").hidden=false;document.body.style.overflow="hidden";$("pClose").focus()}
+function closePlayer(){$("player").hidden=true;$("pFrame").src="about:blank";document.body.style.overflow=""}
+document.addEventListener("click",e=>{const a=e.target.closest("a[data-play]");if(!a)return;e.preventDefault();
+  const t=(a.querySelector("b")||a.closest(".row")?.querySelector(".name")||a).textContent.trim();openPlayer(a.dataset.play,t)});
+$("pClose").onclick=closePlayer;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("player").hidden)closePlayer()});
+</script>
+</body>
+</html>
